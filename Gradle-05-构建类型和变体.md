@@ -1,4 +1,5 @@
-###一.构建类型
+### 一.构建类型
+
 构建类型表明了构建怎么样的APP，Android的gradle插件默认提供了两种类型：debug和release。它们都配置在`buildType`区块中。一个新建项目的`build.gradle`文件配置的`buildType`应该如下所示：
 
 ```
@@ -41,7 +42,8 @@ android {
 }
 ```
 现在release和debug版本的APP都能安装在一台机器上了。
-###二.Flavors和Variants
+### 二.Flavors和Variants
+
 Build Type是研发过程的一部分，基本作为一个从研发到生产的一个发展过程。<br>
 Flavors允许你为同一个APP构建不同的版本，比如你想为不同的客户构建不同的产品，或者你想同时构建免费和付费的产品。<br>
 要声明一个产品的Flavor，需要在`android`模块下使用`productFlavors`配置。
@@ -60,7 +62,8 @@ productFlavors {
     }
 ```
 这样就可以构建出不同版本的APK，而且他们的ID也有轻微的区别。
-####风味维度
+#### 风味维度
+
 ---
 > 需要注意的是，Flavor的名字不能是Gradle已经预定义使用的。
 上述配置貌似没什么问题，但是Gradle在3.0以后新增了自动匹配变体的机制，要求给Flavor指定维度`dimension`,即使只需要一个维度也应该指定。否则将会遇到编译错误：

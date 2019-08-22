@@ -1,4 +1,5 @@
-###一.自定义Task
+### 一.自定义Task
+
 Gradle支持`task`代码块内自定义Task，它支持一系列内置的Task类型（如：Wrapper、Copy、Delete、Exec等）。<br>
 例如Copy类型，它内部包含`from`和`into`属性，`from`内部通过`exclude`设置文件名的过滤规则等。下面简单写一个拷贝APK的Task,但是会过滤掉一部分不需要的文件。
 <a id="copyTask"></a>
@@ -113,7 +114,8 @@ android {
     }
 }
 ```
-###二.将自定义Task和编译过程相关联
+### 二.将自定义Task和编译过程相关联
+
 如果你想将自定义的Task作为整个编译流程的一部分，可使用`dependsOn`属性把你的Task插入到一个有向非循环图。
 >有向：每一个依赖只有一个方向
 >非循环：每一个步骤不可逆
@@ -129,7 +131,8 @@ task copyApks(type: Copy, dependsOn: "assembleDebug") {
 ```
 这个时候，它在执行的时候就会依赖`assembleDebug`，这样就能确保每次都能有APK被操作。
 
-###三.过滤Task
+### 三.过滤Task
+
 有时候我们想过滤某个不需要的Task，这个时候就用到了`-x（全称：--exclude-task）`属性。
 比如，lint检查在编译的时候并不是每次都需要的，则使用下命令过滤lint的检查：
 
@@ -158,7 +161,7 @@ gradle.taskGraph.whenReady { graph ->
 :app:lint SKIPPED
 ```
 
-###四.定义Task类型
+### 四.定义Task类型
 
 首先看一下如何完备一个Task的声明，比如内置的TASK
 
