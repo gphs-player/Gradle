@@ -1,0 +1,22 @@
+/******************************************************************
+ *
+ *                      自定义Task的文件
+ *
+ *******************************************************************/
+
+//定义Task
+class LeoTask extends DefaultTask{
+    String msg = "Hello Leo Task"
+
+    @TaskAction
+    def doHello(){
+        println(" execute task doHello : $msg")
+    }
+}
+//使用默认的msg值
+task helloA(type:LeoTask)
+
+//使用自定义的msg值
+task helloB(type:LeoTask){
+    msg = "Another way say hello"
+}

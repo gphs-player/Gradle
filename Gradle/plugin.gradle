@@ -1,0 +1,49 @@
+/******************************************************************
+ *
+ *                      自定义Plugin的文件
+ *
+ *******************************************************************/
+
+class SimplePlugin implements Plugin<Project>{
+
+    @Override
+    void apply(Project target) {
+        //生成greeting模块，在gradle文件中使用
+        target.task("simplePlugin"){
+            doLast {
+                println("==============")
+                println("Hello , Plugin")
+                println("==============")
+            }
+        }
+    }
+}
+
+
+class LeoPlugin implements Plugin<Project>{
+
+    @Override
+    void apply(Project target) {
+        //生成greeting模块，在gradle文件中使用
+        LeoPluginExtension extension =  target.getExtensions().create("greeting",LeoPluginExtension.class)
+        target.task("showPluginBuildGradle"){
+            doLast {
+                println("Hello ,$extension.greeter")
+                println("I have msg for you : $extension.msg")
+            }
+        }
+    }
+}
+//动态在gradle文件中配置
+class LeoPluginExtension{
+    String greeter = "leo"
+    String msg = "msg from the plugin"
+}
+
+apply plugin: LeoPlugin
+apply plugin: SimplePlugin
+
+greeting{
+    greeter = "lihua"
+    msg = "It's ok"
+}
