@@ -1,4 +1,4 @@
-##新建Gradle项目
+## 新建Gradle项目
 
 在一个empty的目录下执行`gradle init`命令
 
@@ -20,8 +20,10 @@
 > 可使用`gradle init --type  java-library`指定初始化的工程类型，支持的类型有`'basic', 'groovy-library', 'java-library', 'pom', 'scala-library'.`<br>
 > 如果不指定类型，Gradle会根据你当前的项目环境去寻找最合适的初始化类型，比如在项目中发现了`pom.xml`文件，就会指定“pom”作为初始化类型。如果Gradle无法找到合适的类型，就会生成“basic”类型。
 
-##怎么使用Gradle？
-###1.创建TASK
+## 怎么使用Gradle？
+
+ ### 1.创建TASK
+
 ---
 Gradle通过`Groovy`和`Kotlin`提供了API来创建和配置`Task`，一个`Project`包含一系列可执行的`Task`，执行一些简单的操作。
 举个例子，Gradle中有一个叫做`Copy`的东西，能从一个地方把文件复制到另外一个地方，它是Gradle的一个较核心的类。来看看怎么用？
@@ -49,7 +51,8 @@ Gradle通过`Groovy`和`Kotlin`提供了API来创建和配置`Task`，一个`Pro
 
  
 
-###2.引入Plugin
+### 2.引入Plugin
+
 ---
 `Gradle`内部包含了很多`Plugin`,已经发布的一个`base`的`Plugin`,可以结合一个`Zip`的核心类库创建一个归档任务。
 在`build.gradle`文件里添加代码：
