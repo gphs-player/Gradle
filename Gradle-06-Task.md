@@ -103,7 +103,7 @@ Installed on 1 device.
 BUILD SUCCESSFUL in 14s
 ```
 最后可以看到所有的APK都安装在了同一台手机上
-<image width=600 height=300 src="file://users/Users/lihua/Learn/Gradle/pics/gradle_install_flavors.png"/>
+<img width=600 height=300 src="./pics/gradle_install_flavors.png"/>
 
 > 扩展一下ADB的超时时间,因为编译时间可能比较快，但是部署的时间可能会比较慢，有时可能需要调整一下ADB的超时时间。
 
