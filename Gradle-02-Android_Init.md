@@ -8,6 +8,8 @@
 <div align="left">
 <img src="./pics/android_gradle_init.png" width="500" />
 <div/>
+
+
 #### <font color="green">1.build.gradle </font>
 
 Android工程是Gradle下的`multi-projects`模式，它有一个`Top-Level`的`build.gradle`文件，一个子目录`app`也有它自己的`build.gradle`文件。最顶层的`build.gradle`被标记了`(Project: HelloWorld)`,而`app`下的`build.gradle`文件标记了`(Module: app)`.
