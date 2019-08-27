@@ -20,3 +20,69 @@ task helloA(type:LeoTask)
 task helloB(type:LeoTask){
     msg = "Another way say hello"
 }
+
+/******************************************************************
+ *
+ *                      Copy Task
+ *
+ *******************************************************************/
+task copyPoems(group: 'leoTask',type: Copy){
+
+    from ('./repo'){
+        include '**/*.jar'
+        //将上述找到的资源打包进dest目录，然后再copy
+        into 'dest'
+    }
+    from ('./test'){
+        // 排除gradle文件
+//    exclude '*.gradle'
+        //只要gradle文件
+        include '*.gradle'
+    }
+    into "$buildDir/poems"
+    //进行重命名
+    rename{
+        fileName ->
+            "production-file-${(fileName)}"
+    }
+}
+println "NOT HELPFUL:"
+//这样的打印是
+println files(copyPoems).files
+
+def versionId = '1.6'
+
+task copyProductionConfig(type: Copy) {
+    from 'test'
+    include 'config.properties'
+    into 'build/war/WEB-INF/config'
+    //动态替换配置文件中部分属性，语法参考config.properties
+    expand([
+            databaseHostname: 'db.leo.com',
+            version: versionId,
+            buildNumber: (int)(Math.random() * 1000),
+            date: new Date()
+    ])
+}
+
+//Copy文件并计算哈希值
+import java.security.MessageDigest
+task copyAndHash(type: Copy) {
+    MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
+    into 'build/deploy'
+    from 'test/todo.md'
+    eachFile { fileCopyDetails ->
+        sha1.digest(fileCopyDetails.file.bytes)
+    }
+    doLast {
+        Formatter hexHash = new Formatter()
+        sha1.digest().each { b -> hexHash.format('%02x', b) }
+        println hexHash
+    }
+}
+
+task naiveFileLister {
+    doLast {
+        println fileTree('app/src/main/java').files
+    }
+}

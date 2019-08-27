@@ -1,6 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 apply from : './task.gradle'
 println("START---------build.gradle---------START")
+
 buildscript {
     //统一管理依赖版本
     ext.versions=[
@@ -15,6 +17,7 @@ buildscript {
         maven {
             url './repo'
         }
+
         google()
         jcenter()
 
@@ -22,10 +25,14 @@ buildscript {
     dependencies {
 //        classpath 'com.android.tools.build:gradle:3.4.1'
 //        classpath 'com.android.tools.build:gradle:3.3.2'
-        classpath 'com.lh.plugin:lhPlugin:1.0.0'
+//        classpath 'com.lh.plugin:lhPlugin:1.0.0'
         classpath 'com.leo.plugin:customPlugin:1.0.0'
         classpath deps.android_gradle_plugin
     }
+}
+
+subprojects {
+    apply plugin: 'com.leo.plugin'
 }
 
 allprojects {
@@ -42,11 +49,47 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-
 task hello {
+    group "LeoTask"
+    description "Custom task say hello"
     doLast {
         Fun.sayHello()
     }
 }
 task sayHello(type: com.leo.HelloTask)
 println("START---------build.gradle---------START")
+// hello 执行完毕后会自动触发   sayHello，或者说 sayHello终结了hello任务
+hello.finalizedBy  sayHello
+
+gradle.projectsLoaded {
+            println("---***===")
+//    g ->
+//        g.rootProject.buildScript{
+//        }
+}
+
+//gradle.buildFinished { buildResult ->
+//    println "BUILD FINISHED"
+//    println "build failure - " + buildResult.failure
+//}
+
+
+task fail {
+    //
+    doLast {
+        throw new Exception("Build failed")
+    }
+}
+allprojects {
+//    beforeEvaluate {
+//        if(project.file('grammars').isDirectory()) {
+//            println "'grammars' found in ${project.name}"
+//
+//            task testGrammars << {
+//                println "Running grammar tests in ${project.name}"
+//            }
+//        } else {
+//            println "'grammars' not found in ${project.name}"
+//        }
+//    }
+}

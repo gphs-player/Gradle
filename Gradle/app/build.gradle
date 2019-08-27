@@ -1,16 +1,14 @@
-println("START---------app---build.gradle---------START")
+
 apply plugin: 'com.android.application'
 
 //1.引入文件
 apply from: '../config.gradle'
 apply from: '../plugin.gradle'
-
+//apply plugin: "gradle.site"
 //2.独立模块
 apply plugin: 'simplePlugin'
-
-apply plugin: 'com.lh.plugin'
-apply plugin: 'com.leo.plugin'
-
+//3.独立项目
+//apply plugin: 'com.lh.plugin'
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -22,20 +20,34 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        disable
+    }
+
 
 }
 
 
-aShowHello{
-    msg = "how are you !"
-    recipient = "James"
+task runSkipBuild(type: com.leo.plugin.SkipBuildTask){
+    finalizedBy "assembleDebug"
+}
+skipBuild{
+    skip = false
 }
 
+//aShowHello{
+//    msg = "how are you !"
+//    recipient = "James"
+//}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -45,4 +57,16 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
-println("END---------app---build.gradle---------END")
+//所有的build.gradle文件分析结束
+//afterEvaluate {
+//    if (file('grammars').isDirectory()) {
+//        println "'grammars' directory found"
+//
+//        task testGrammars << {
+//            println "Running grammar tests"
+//        }
+//    } else {
+//        println "'grammars' directory not found"
+//    }
+//
+//}

@@ -1,5 +1,118 @@
-project.task("showConfig"){
+project.task("showConfig") {
     doLast {
         println("$project.name:showConfig")
     }
 }
+
+//声明version对象属性
+version = new ProjectVersion(0, 1)
+
+class ProjectVersion {
+    Integer major
+    Integer minor
+    boolean release
+
+    ProjectVersion(Integer major, Integer minor) {
+        this.major = major
+        this.minor = minor
+        this.release = Boolean.FALSE
+    }
+
+    ProjectVersion(Integer major, Integer minor, boolean release) {
+        this(major, minor)
+        this.release = release
+    }
+
+    @Override
+    String toString() {
+        return "$major.$minor${release ? '' : '-SNAPSHOT'}"
+    }
+}
+
+ext.versionFile = file('../version.properties')
+task printVersion(group: 'versioning') {
+    //任务在调用的时候才执行
+    doLast {
+        logger.quiet("Version:$version")
+    }
+}
+//此任务在配置阶段就执行
+task loadVersion(group: 'versioning') {
+    project.version = readVersion()
+}
+
+//task makeReleaseVersion(group:'versioning',description:'Makes Project a release version')<<{
+//    version.release = true
+//    ant.propertyfile(file: versionFile){
+//        entry(key:'release',type:'string',operation:'=',value:'true')
+//    }
+//}
+
+
+task makeReleaseVersion(group: 'versioning', description: 'Makes Project a release version') {
+    inputs.property('release',version.release)
+    outputs.file versionFile
+    doLast {
+        version.release = true
+        ant.propertyfile(file: versionFile) {
+            entry(key: 'release', type: 'string', operation: '=', value: 'true')
+        }
+    }
+}
+
+ProjectVersion readVersion() {
+    logger.quiet("Reading the version file")
+    if (!ext.versionFile.exists()) {
+        throw new GradleException("Version File does not exist!")
+    }
+    Properties versionPro = new Properties()
+    versionPro.load(new FileInputStream(versionFile))
+
+
+    versionFile.withInputStream {
+        stream ->
+            versionPro.load(stream)
+    }
+    return new ProjectVersion(versionPro.major.toInteger(), versionPro.minor.toInteger(), versionPro.release.toBoolean())
+}
+
+task createReleaseVersion(type: ReleaseVersionTask){
+    release = version.release
+    destFile = versionFile
+    gradle.beforeProject {
+        project ->
+
+    }
+    gradle.taskGraph.whenReady {
+        graph ->
+
+    }
+    gradle.buildFinished {
+        result->
+
+    }
+}
+
+class ReleaseVersionTask extends DefaultTask {
+
+    @Input
+    Boolean release
+    @OutputFile
+    File destFile
+
+     ReleaseVersionTask() {
+        setGroup("versioning")
+        setDescription("Make project a release version")
+    }
+
+    @TaskAction
+    void start(){
+        project.version.release = true
+        ant.propertyfile(file: destFile){
+            entry(key: 'release', type: 'string', operation: '=', value: 'true')
+        }
+    }
+}
+
+
+
