@@ -32,3 +32,5 @@
 
 ## 8.其他
 
+[api&implementation的区别](./Gradle-依赖细节.md)
+

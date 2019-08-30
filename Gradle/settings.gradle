@@ -1,4 +1,4 @@
 
 println("START---------settings.gradle---------START")
-include ':app', ':plugin', ':plugin_groovy','buildSrc'
+include ':app', ':plugin', ':plugin_groovy', ':LibA', ':LibB', ':LibC', ':LibD','buildSrc'
 println("END---------settings.gradle---------END")
