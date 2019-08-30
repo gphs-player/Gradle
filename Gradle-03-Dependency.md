@@ -139,3 +139,68 @@ repositories{
     }
 ```
 这是将依赖文件添加到`dependencies`的另外选择方式，等同于`files`和`fileTree`
+
+
+
+### 三、管理依赖
+
+典型应用场景：multi projects
+
+#### 1.扩展gradle的ext属性
+
+在gradle文件中定义（可以是主工程build.gradle,或者另起gradle文件）
+
+```groovy
+//统一管理依赖版本
+ext.versions=[
+        "gradle":"3.3.2",
+        "v7":"28.0.0"
+]
+ext.deps= [
+        "android_gradle_plugin" : "com.android.tools.build:gradle:${versions.gradle}",
+        "support_v7": "com.android.support:appcompat-v7:${versions.v7}"
+]
+```
+
+使用
+
+```groovy
+		dependencies {
+        classpath deps.android_gradle_plugin
+    }
+    dependencies {
+        implementation deps.support_v7
+    }
+```
+
+#### 2.buildSRC
+
+[创建buildSRC参考](./Gradle-07-Plugin.md)
+
+以`Java`语言为例：
+
+创建`Deps.java`文件
+
+```java
+public class Deps {
+    public static final String androidPlugin = "com.android.tools.build:gradle:3.0.0-beta6";
+
+    public static final String kotlinVersion = "1.1.50";
+    public static final String kotlinPlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:" + kotlinVersion;
+    public static final String kotlinRuntime = "org.jetbrains.kotlin:kotlin-stdlib-jre7:" + kotlinVersion;
+
+    public static final String appCompat = "com.android.support:appcompat-v7:28.0.0";
+    public static final String constraintLayout = "com.android.support.constraint:constraint-layout:1.0.2";
+
+    public static final String junit = "junit:junit:4.12";
+}
+```
+
+Sync工程然后引用
+
+```groovy
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation Deps.appCompat
+}
+```

@@ -136,8 +136,6 @@ greeting{
 
 ​	主工程下创建此目录，和其他子工程同级。
 
-
-
 ##### 1.2 手动添加build.gradle文件
 
 ​	build.gradle文件如下：
