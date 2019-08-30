@@ -1,6 +1,4 @@
-
 apply plugin: 'com.android.application'
-
 //1.引入文件
 apply from: '../config.gradle'
 apply from: '../plugin.gradle'
@@ -18,15 +16,22 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
     buildTypes {
         debug {
             debuggable true
             minifyEnabled false
+            manifestPlaceholders = [
+                    "leo-value": "lihua"
+            ]
         }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders = [
+                    "leo-value": "lihua"
+            ]
         }
     }
     lintOptions {
@@ -37,19 +42,14 @@ android {
 }
 
 
-task runSkipBuild(type: com.leo.plugin.SkipBuildTask){
-    finalizedBy "assembleDebug"
-}
-skipBuild{
-    skip = false
-}
-
 //aShowHello{
 //    msg = "how are you !"
 //    recipient = "James"
 //}
 
 dependencies {
+
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation Deps.appCompat
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
@@ -57,6 +57,54 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+project.afterEvaluate {
+    //AAR
+//    android.libraryVariants.all {
+    //APK
+    android.applicationVariants.all {
+        variant ->
+            def mergedFlavor = variant.getMergedFlavor()
+            //这里配置的优先级较低，在buildType中配置manifestPlaceholders会替换掉
+            mergedFlavor.manifestPlaceholders = ["leo-value": "www.example.com/${variant.versionName}"]
+            String variantName = variant.name.capitalize()
+            println("variantName : ${variantName}")
+            def processManifestTask = project.tasks.getByName("process${variantName}Manifest")
+            processManifestTask.doLast {
+                pmt ->
+//                String manifestPath = "$pmt.manifestOutputDirectory/AndroidManifest.xml"
+                    println("manifestOutputDirectory : " + manifestOutputDirectory)
+                    String manifestPath = "$manifestOutputDirectory/AndroidManifest.xml"
+                    println("manifest : ${manifestPath}")
+//                    def manifest = file(manifestPath).getText()
+                    println("=============")
+//                    println(manifestFile)
+            }
+            //自己写入
+            //outputs是数组，debug release
+            variant.outputs.each {
+                output ->
+
+                    def manifestFile = "${projectDir}/src/main/AndroidManifest.xml"
+                    //AndroidManifest.xml的位置
+                    //lb_target_pkgname 需要替换的值
+                    def updatedContent = file(manifestFile).getText('UTF-8').replaceAll("niubao-value", "niubao-aaa")
+                    file(manifestFile).write(updatedContent, 'UTF-8')
+            }
+    }
+}
+task appCreate(group: "leoPackage", description: "组合打包流程", dependsOn: "clean") {
+    finalizedBy "assembleDebug"
+}
+
+task installAPK(type: Exec, dependsOn: appCreate) {
+    workingDir "${buildDir}/outputs/apk/debug"
+    commandLine 'adb', 'install', '-r', 'app-debug.apk'
+
+}
+task installRun(type: Exec, dependsOn: installAPK) {
+    commandLine 'adb', 'shell', 'am', 'start', "${android.defaultConfig.applicationId}/.MainActivity"
+}
+
 //所有的build.gradle文件分析结束
 //afterEvaluate {
 //    if (file('grammars').isDirectory()) {
@@ -70,3 +118,16 @@ dependencies {
 //    }
 //
 //}
+task startNpm() {
+    doLast {
+        exec {
+            //启动本地脚本
+//            commandLine 'npm', 'start'
+        }
+        standardOutput = new ByteArrayOutputStream()
+        ext.output = {
+            return standardOutput.toString()
+        }
+    }
+}
+

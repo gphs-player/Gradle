@@ -38,3 +38,9 @@ gradle.buildFinished {
     result->
 }
 ```
+
+
+
+#### Gradle生命周期细化
+
+![](./pics/gradle_lifecycle.png)

@@ -18,3 +18,15 @@ uploadArchives {
         }
     }
 }
+
+gradle.taskGraph.whenReady {
+//    printTaskDependency project.tasks.findByName('uploadArchives')
+
+}
+
+void printTaskDependency(Task task) {
+    task.getTaskDependencies().getDependencies(task).any() {
+        println(">>${it.path}")
+        printTaskDependency(it)
+    }
+}

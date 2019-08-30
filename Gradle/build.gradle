@@ -26,13 +26,13 @@ buildscript {
 //        classpath 'com.android.tools.build:gradle:3.4.1'
 //        classpath 'com.android.tools.build:gradle:3.3.2'
 //        classpath 'com.lh.plugin:lhPlugin:1.0.0'
-        classpath 'com.leo.plugin:customPlugin:1.0.0'
+//        classpath 'com.leo.plugin:customPlugin:1.0.0'
         classpath deps.android_gradle_plugin
     }
 }
 
 subprojects {
-    apply plugin: 'com.leo.plugin'
+//    apply plugin: 'com.leo.plugin'
 }
 
 allprojects {
