@@ -5,7 +5,7 @@
 想添加其他的类库到项目中？
 默认情况下，工程下的`build.gradle`文件有一个`dependencies`项：
 
-```
+```groovy
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
@@ -29,7 +29,64 @@ dependencies {
 }
 ```
 
+#### 获取依赖
 
+```groovy
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        println(details.requested.toString())//requested就是依赖的具体参数
+        if (details.requested.version == 'default') {
+            println("details default: " + details.requested)
+            def version = findDefaultVersionInCatalog(details.requested.group, details.requested.name)
+            details.useVersion version.version
+            details.because version.because
+        }
+    }
+}
+```
+
+#### 依赖版本控制
+
+```groovy
+configurations.all {
+  	//maven库转为本地依赖，前提是工程中有导入
+    resolutionStrategy.dependencySubstitution.all { DependencySubstitution dependency ->
+        if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.group == "org.example") {
+            def targetProject = findProject(":${dependency.requested.module}")
+            if (targetProject != null) {
+                dependency.useTarget targetProject
+            }
+        }
+    }
+
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        //指定版本
+        if (details.requested.name == 'appcompat-v7') {
+            details.useVersion '28.0.0'
+            details.because 'API breakage in higher versions'
+        }
+        if (details.requested.version == 'defaultVersion') {
+            def version = findDefaultVersionInCatalog(details.requested.group, details.requested.name)
+            details.useVersion version.version
+            details.because version.because
+        }
+        //如果某个依赖项的版本不再使用了，可以替换版本
+        if (details.requested.group == 'org.software' && details.requested.name == 'some-library' && details.requested.version == '1.2') {
+            details.useVersion '1.2.1'
+            details.because 'fixes critical bug in 1.2'
+        }
+        //如果某个库更合适
+        if (details.requested.name == 'groovy-all') {
+            details.useTarget group: details.requested.group, name: 'groovy', version: details.requested.version
+            details.because "prefer 'groovy' over 'groovy-all'"
+        }
+        if (details.requested.name == 'log4j') {
+            details.useTarget "org.slf4j:log4j-over-slf4j:1.7.10"
+            details.because "prefer 'log4j-over-slf4j' 1.7.10 over any version of 'log4j'"
+        }
+    }
+}
+```
 
 ### 二、传递依赖
 
@@ -117,21 +174,21 @@ BUILD SUCCESSFUL in 0s
 ```
 可以看到只有当前工程直接添加的依赖被添加到工程中，附属于依赖项的资源没有被添加。也可以单独为工程添加依赖过滤：
 
-```
+```groovy
     implementation ('com.leo.library:man:0.0.1'){
         transitive = false
     }
 ```
 当然也可以使用`exclude`控制附属依赖项的编译：
 
-```
+```groovy
     implementation ('com.leo.library:man:0.0.1'){
         exclude group:'com.google.code.gson'
     }
 ```
 如果在本地有文件需要依赖，可以使用如下方式：
 
-```
+```groovy
 repositories{
         flatDir{
             dirs 'libs'
