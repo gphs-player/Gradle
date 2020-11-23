@@ -9,7 +9,7 @@ import com.leo.libc.LibC;
  * <p>Author:niu bao</p>
  * <p>Desc:</p>
  */
-public class LibA {
+public class LibA{
     private LibC libC;
     public void showA(){
         System.out.println("showA");

@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.dsl.ProductFlavor
+import com.android.build.gradle.internal.dsl.SigningConfig
+
 apply plugin: 'com.android.application'
 //1.引入文件
 apply from: '../config.gradle'
@@ -7,6 +10,10 @@ apply from: '../plugin.gradle'
 apply plugin: 'simplePlugin'
 //3.独立项目
 //apply plugin: 'com.lh.plugin'
+
+//apply plugin: 'com.leo.transform'
+
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -16,22 +23,43 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+
+        release {
+            storeFile file("../packConfig/proa.jks")
+            storePassword "123456"
+            keyPassword "123456"
+            keyAlias "keya"
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    flavorDimensions "default"
+    productFlavors {
+        flavorA {
+            dimension "default"
+            manifestPlaceholders = ["leo-value": "flavorA"]
+        }
+        flavorB {
+            dimension "default"
+            manifestPlaceholders = ["leo-value": "flavorB"]
+            signingConfig signingConfigs.release
+        }
+
 
     }
+
+
     buildTypes {
         debug {
             debuggable true
             minifyEnabled false
-            manifestPlaceholders = [
-                    "leo-value": "lihua"
-            ]
         }
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [
-                    "leo-value": "lihua"
-            ]
         }
     }
     lintOptions {
@@ -42,11 +70,6 @@ android {
 }
 
 
-//aShowHello{
-//    msg = "how are you !"
-//    recipient = "James"
-//}
-
 dependencies {
 
 
@@ -54,30 +77,35 @@ dependencies {
 //    implementation Deps.appCompat
 //    implementation deps.support_v7
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-
     api project(":LibB")
     implementation project(":LibA")
 }
+
+
 project.afterEvaluate {
+
     //AAR
 //    android.libraryVariants.all {
     //APK
     android.applicationVariants.all {
         variant ->
+//            println "variant: "+variant.getVariantData().getVariantConfiguration().getManifestPlaceholders().toString()
+//            println "variant.getFlavorName(): "+variant.getFlavorName()
             def mergedFlavor = variant.getMergedFlavor()
-            //这里配置的优先级较低，在buildType中配置manifestPlaceholders会替换掉
-            mergedFlavor.manifestPlaceholders = ["leo-value": "www.example.com/${variant.versionName}"]
+//            println "variant.productFlavors : " + variant.productFlavors.get(0).name
+//            println "variant.buildType.name : " + variant.buildType.name
+            //这里配置的优先级比buildType低 比Flavor高，在buildType中配置manifestPlaceholders会替换掉
+            mergedFlavor.manifestPlaceholders = ["leo-value": "www.example.com/${variant.versionName}${variant.getFlavorName()}"]
             String variantName = variant.name.capitalize()
-            println("variantName : ${variantName}")
+//            println("variantName : ${variantName}")
             def processManifestTask = project.tasks.getByName("process${variantName}Manifest")
             processManifestTask.doLast {
                 pmt ->
-//                String manifestPath = "$pmt.manifestOutputDirectory/AndroidManifest.xml"
                     println("manifestOutputDirectory : " + manifestOutputDirectory)
                     String manifestPath = "$manifestOutputDirectory/AndroidManifest.xml"
                     println("manifest : ${manifestPath}")
 //                    def manifest = file(manifestPath).getText()
-                    println("=============")
+
 //                    println(manifestFile)
             }
             //自己写入
@@ -100,8 +128,17 @@ task appCreate(group: "leoPackage", description: "组合打包流程", dependsOn
 task installAPK(type: Exec, dependsOn: appCreate) {
     workingDir "${buildDir}/outputs/apk/debug"
     commandLine 'adb', 'install', '-r', 'app-debug.apk'
-
 }
+
+task packMultiRelease() {
+    tasks.findAll {
+        it.name.matches("assemble.*")
+    }.forEach {
+//        println "packMultiRelease ::"+it.name
+    }
+}
+
+
 task installRun(type: Exec, dependsOn: installAPK) {
     commandLine 'adb', 'shell', 'am', 'start', "${android.defaultConfig.applicationId}/.MainActivity"
 }

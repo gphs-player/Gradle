@@ -21,7 +21,6 @@ import java.util.Set;
 
 
 public class CustomPlugin implements Plugin<Project> {
-
     @Override
     public void apply(Project target) {
         target.getPlugins().apply(CustomPlugin.class);

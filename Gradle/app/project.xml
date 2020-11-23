@@ -1,0 +1,14 @@
+<RootProject>
+    <Project>
+        <AppId>12345</AppId>
+        <AppName>测试版</AppName>
+        <AppVersionCode>10001</AppVersionCode>
+        <AppVersionName>1.0.1</AppVersionName>
+        <ApplicationId>com.leo.test</ApplicationId>
+        <PlaceHolder>
+            <Key1>James</Key1>
+            <Key2>Tony</Key2>
+            <Key3>Holy</Key3>
+        </PlaceHolder>
+    </Project>
+</RootProject>

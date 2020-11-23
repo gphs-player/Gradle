@@ -13,6 +13,7 @@
         <meta-data android:name="leo-key" android:value="niubao-aaa"/>
         <!--leo为KEY，leo-value 在gradle中manifestPlaceholdes配置-->
         <meta-data android:name="leo" android:value="${leo-value}"/>
+
         <activity android:name="com.leo.gradle.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

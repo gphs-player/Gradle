@@ -1,0 +1,25 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation gradleApi()
+    implementation localGroovy()
+
+    implementation 'com.android.tools.build:gradle-api:3.4.2'
+    implementation 'com.android.tools.build:gradle:3.4.2'
+    implementation 'org.ow2.asm:asm:6.2'
+    implementation 'org.ow2.asm:asm-commons:6.2'
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            pom.groupId = "com.leo.transform"
+            pom.artifactId = "TransformPlugin"
+            pom.version = "1.0.2"
+            repository(url: uri('../repo'))
+        }
+    }
+}
+
