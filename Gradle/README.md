@@ -12,7 +12,3 @@
 
 ​	`groovy`实现`Gradle`的plugin
 
-#### LibA/LibB/LibC/LibD
-
-​	测试`api`&`implementation`的依赖区别
-

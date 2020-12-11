@@ -60,12 +60,6 @@ println("START---------build.gradle---------START")
 // hello 执行完毕后会自动触发   sayHello，或者说 sayHello终结了hello任务
 hello.finalizedBy  sayHello
 
-gradle.projectsLoaded {
-            println("---***===")
-//    g ->
-//        g.rootProject.buildScript{
-//        }
-}
 
 //gradle.buildFinished { buildResult ->
 //    println "BUILD FINISHED"
